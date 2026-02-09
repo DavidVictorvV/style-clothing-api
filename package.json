@@ -1,14 +1,22 @@
 {
-  "name": "backend",
+  "name": "hair-outfit-ai-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Netlify Functions backend for Hair & Outfit AI app",
   "main": "index.js",
   "scripts": {
+    "dev": "netlify dev",
+    "deploy": "netlify deploy --prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "netlify",
+    "functions",
+    "replicate",
+    "ai",
+    "image-generation"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
     "@netlify/functions": "^5.1.2",
