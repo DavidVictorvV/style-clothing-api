@@ -35,6 +35,17 @@ netlify dev
 
 The functions will be available at `http://localhost:8888/.netlify/functions/`
 
+## CORS Configuration
+
+All API endpoints include comprehensive CORS support:
+
+- **Access-Control-Allow-Origin**: `*` (allows requests from any origin)
+- **Access-Control-Allow-Headers**: `Content-Type, Authorization`
+- **Access-Control-Allow-Methods**: `GET, POST, PUT, DELETE, OPTIONS`
+- **Access-Control-Max-Age**: `86400` (24 hours)
+
+All functions handle OPTIONS preflight requests automatically using the shared CORS utility in `netlify/functions/utils/cors.js`.
+
 ## API Endpoints
 
 ### POST /api/generate
