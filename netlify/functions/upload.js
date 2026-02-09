@@ -1,12 +1,17 @@
-const fetch = require('node-fetch');
+const { handleOptions, withCors } = require('./utils/cors');
 
 exports.handler = async function (event, context) {
+  // Handle OPTIONS preflight request
+  if (event.httpMethod === 'OPTIONS') {
+    return handleOptions();
+  }
+
   // Only allow POST
   if (event.httpMethod !== 'POST') {
-    return {
+    return withCors({
       statusCode: 405,
       body: JSON.stringify({ error: 'Method not allowed' }),
-    };
+    });
   }
 
   try {
@@ -19,10 +24,10 @@ exports.handler = async function (event, context) {
     const { imageData, filename } = body;
 
     if (!imageData) {
-      return {
+      return withCors({
         statusCode: 400,
         body: JSON.stringify({ error: 'Missing image data' }),
-      };
+      });
     }
 
     // Option 1: Upload to Cloudinary, S3, or similar service
@@ -33,20 +38,19 @@ exports.handler = async function (event, context) {
     // In production, you should upload to a proper storage service
     const dataUri = `data:image/jpeg;base64,${imageData}`;
 
-    return {
+    return withCors({
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify({ url: dataUri }),
-    };
+    });
 
   } catch (err) {
     console.error('Error in upload function:', err);
-    return {
+    return withCors({
       statusCode: 500,
       body: JSON.stringify({ error: String(err) }),
-    };
+    });
   }
 };

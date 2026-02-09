@@ -8,56 +8,60 @@
 // - MongoDB Atlas
 // - PostgreSQL
 
+const { handleOptions, withCors } = require('./utils/cors');
+
 exports.handler = async function (event, context) {
   const method = event.httpMethod;
+
+  // Handle OPTIONS preflight request
+  if (method === 'OPTIONS') {
+    return handleOptions();
+  }
 
   try {
     switch (method) {
       case 'GET':
         // List all profiles for a user
-        return {
+        return withCors({
           statusCode: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify([]),
-        };
+        });
 
       case 'POST':
         // Create or update a profile
         const body = JSON.parse(event.body);
-        return {
+        return withCors({
           statusCode: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify(body),
-        };
+        });
 
       case 'DELETE':
         // Delete a profile
-        return {
+        return withCors({
           statusCode: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify({ success: true }),
-        };
+        });
 
       default:
-        return {
+        return withCors({
           statusCode: 405,
           body: JSON.stringify({ error: 'Method not allowed' }),
-        };
+        });
     }
   } catch (err) {
     console.error('Error in profiles function:', err);
-    return {
+    return withCors({
       statusCode: 500,
       body: JSON.stringify({ error: String(err) }),
-    };
+    });
   }
 };

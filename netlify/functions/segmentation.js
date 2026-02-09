@@ -1,10 +1,17 @@
+const { handleOptions, withCors } = require('./utils/cors');
+
 exports.handler = async function (event, context) {
+  // Handle OPTIONS preflight request
+  if (event.httpMethod === 'OPTIONS') {
+    return handleOptions();
+  }
+
   // Only allow POST
   if (event.httpMethod !== 'POST') {
-    return {
+    return withCors({
       statusCode: 405,
       body: JSON.stringify({ error: 'Method not allowed' }),
-    };
+    });
   }
 
   try {
@@ -12,10 +19,10 @@ exports.handler = async function (event, context) {
     const { image_url, region } = body;
 
     if (!image_url || !region) {
-      return {
+      return withCors({
         statusCode: 400,
         body: JSON.stringify({ error: 'Missing required fields: image_url, region' }),
-      };
+      });
     }
 
     // TODO: Implement automatic mask generation
@@ -33,23 +40,22 @@ exports.handler = async function (event, context) {
     // 4. Upload mask to storage
     // 5. Return mask URL
 
-    return {
+    return withCors({
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify({
         mask_url: null,
         message: 'Automatic mask generation not yet implemented. Use manual mask editor in the app.',
       }),
-    };
+    });
 
   } catch (err) {
     console.error('Error in segmentation function:', err);
-    return {
+    return withCors({
       statusCode: 500,
       body: JSON.stringify({ error: String(err) }),
-    };
+    });
   }
 };
