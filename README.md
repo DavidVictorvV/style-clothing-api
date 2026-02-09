@@ -113,12 +113,12 @@ Optional cloud profile storage. Currently returns mock data.
 Required:
 - `REPLICATE_API_TOKEN` - Your Replicate API token
 
-Optional (for future features):
-- `AWS_ACCESS_KEY_ID` - For S3 image uploads
-- `AWS_SECRET_ACCESS_KEY` - For S3 image uploads
-- `AWS_REGION` - For S3 image uploads
-- `AWS_S3_BUCKET` - For S3 image uploads
-- `DATABASE_URL` - For cloud profile storage
+Optional (CORS Configuration):
+- `CORS_ALLOWED_ORIGINS` - Allowed origins (default: `*`)
+- `CORS_ALLOWED_HEADERS` - Allowed headers (default: `Content-Type, Authorization`)
+- `CORS_ALLOWED_METHODS` - Allowed methods (default: `GET, POST, PUT, DELETE, OPTIONS`)
+
+**Note**: All data (profiles, images) is stored locally on the device. No cloud storage or database required.
 
 ## Tech Stack
 

@@ -4,25 +4,53 @@
 
 All Netlify Functions in this backend have comprehensive CORS (Cross-Origin Resource Sharing) support to allow the React Native mobile app to communicate with the API from any origin.
 
+## Environment Variables
+
+CORS settings are configured via environment variables in `.env`:
+
+```bash
+# Allow all origins (development)
+CORS_ALLOWED_ORIGINS=*
+
+# Or restrict to specific origins (production)
+CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://app.yourdomain.com
+
+# Allowed headers
+CORS_ALLOWED_HEADERS=Content-Type,Authorization
+
+# Allowed methods
+CORS_ALLOWED_METHODS=GET,POST,PUT,DELETE,OPTIONS
+```
+
+**Default values** (if not set):
+- `CORS_ALLOWED_ORIGINS`: `*` (all origins)
+- `CORS_ALLOWED_HEADERS`: `Content-Type, Authorization`
+- `CORS_ALLOWED_METHODS`: `GET, POST, PUT, DELETE, OPTIONS`
+
 ## Implementation
 
 ### Shared CORS Utility
 
 Location: `netlify/functions/utils/cors.js`
 
+The utility reads CORS configuration from environment variables:
+
 ```javascript
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Max-Age': '86400', // 24 hours
-};
+function getCorsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': process.env.CORS_ALLOWED_ORIGINS || '*',
+    'Access-Control-Allow-Headers': process.env.CORS_ALLOWED_HEADERS || 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': process.env.CORS_ALLOWED_METHODS || 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Max-Age': '86400', // 24 hours
+  };
+}
 ```
 
 ### Key Functions
 
-1. **handleOptions()** - Responds to OPTIONS preflight requests
-2. **withCors(response)** - Wraps any response with CORS headers
+1. **getCorsHeaders()** - Returns CORS headers from environment variables
+2. **handleOptions()** - Responds to OPTIONS preflight requests
+3. **withCors(response)** - Wraps any response with CORS headers
 
 ## How It Works
 
