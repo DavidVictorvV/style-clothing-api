@@ -1,0 +1,562 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hair & Outfit AI API",
+    "description": "AI-powered API for generating hairstyle and clothing try-on images using Replicate's prunaai/p-image model",
+    "version": "1.0.0",
+    "contact": {
+      "name": "GitHub",
+      "url": "https://github.com/DavidVictorvV/style-clothing-api"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "/.netlify/functions",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:8888/.netlify/functions",
+      "description": "Local development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Generation",
+      "description": "Image generation endpoints"
+    },
+    {
+      "name": "Upload",
+      "description": "Image upload endpoints"
+    },
+    {
+      "name": "Segmentation",
+      "description": "Mask generation endpoints"
+    },
+    {
+      "name": "Profiles",
+      "description": "Profile management endpoints (optional)"
+    }
+  ],
+  "paths": {
+    "/generate": {
+      "post": {
+        "tags": ["Generation"],
+        "summary": "Generate AI-edited image",
+        "description": "Generate hairstyle or clothing edits using Replicate's prunaai/p-image model",
+        "operationId": "generateImage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerationRequest"
+              },
+              "example": {
+                "profile": {
+                  "id": "profile_123",
+                  "name": "Test Profile",
+                  "gender": "female",
+                  "age": 30
+                },
+                "image_url": "https://example.com/image.jpg",
+                "mask_url": "https://example.com/mask.png",
+                "prompt": "Apply a realistic bob haircut to the person in the input photo. Keep hair texture natural and realistic hairline. Preserve the person's face, face structure, skin tone, body proportions, clothing, and background.",
+                "mode": "hair",
+                "options": {
+                  "preserve_face": true,
+                  "preserve_body": true,
+                  "allow_face_changes": false,
+                  "color": "ash blonde",
+                  "color_mode": "tips",
+                  "style_tag": "bob"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully generated image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error or Replicate API error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/upload": {
+      "post": {
+        "tags": ["Upload"],
+        "summary": "Upload image",
+        "description": "Upload an image and receive a URL (currently returns data URI for development)",
+        "operationId": "uploadImage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadRequest"
+              },
+              "example": {
+                "imageData": "base64_encoded_image_data_here",
+                "filename": "photo.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully uploaded image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing image data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/segmentation": {
+      "post": {
+        "tags": ["Segmentation"],
+        "summary": "Generate segmentation mask",
+        "description": "Generate automatic mask for hair/clothing regions (not yet implemented)",
+        "operationId": "generateMask",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SegmentationRequest"
+              },
+              "example": {
+                "image_url": "https://example.com/image.jpg",
+                "region": "hair"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mask generation response (placeholder)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SegmentationResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/profiles": {
+      "get": {
+        "tags": ["Profiles"],
+        "summary": "List all profiles",
+        "description": "Get all profiles for a user (placeholder - returns empty array)",
+        "operationId": "getProfiles",
+        "responses": {
+          "200": {
+            "description": "List of profiles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Profile"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Profiles"],
+        "summary": "Create or update profile",
+        "description": "Create or update a profile (placeholder - returns input)",
+        "operationId": "createProfile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Profile"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile created/updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Profiles"],
+        "summary": "Delete profile",
+        "description": "Delete a profile (placeholder)",
+        "operationId": "deleteProfile",
+        "responses": {
+          "200": {
+            "description": "Profile deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Profile": {
+        "type": "object",
+        "required": ["id", "name"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique profile identifier"
+          },
+          "name": {
+            "type": "string",
+            "description": "Profile name"
+          },
+          "gender": {
+            "type": "string",
+            "enum": ["male", "female", "other"],
+            "description": "Gender"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Age in years"
+          },
+          "height_cm": {
+            "type": "integer",
+            "description": "Height in centimeters"
+          },
+          "weight_kg": {
+            "type": "integer",
+            "description": "Weight in kilograms"
+          },
+          "body_type": {
+            "type": "string",
+            "enum": ["slim", "athletic", "average", "plus"],
+            "description": "Body type"
+          },
+          "skin_tone": {
+            "type": "string",
+            "description": "Skin tone description"
+          },
+          "face_description": {
+            "type": "string",
+            "description": "Face description"
+          },
+          "hair_base_color": {
+            "type": "string",
+            "description": "Base hair color"
+          },
+          "last_image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Last used image URL"
+          },
+          "preferred_style_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Preferred style tags"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          }
+        }
+      },
+      "GenerationOptions": {
+        "type": "object",
+        "required": ["preserve_face", "preserve_body", "allow_face_changes"],
+        "properties": {
+          "preserve_face": {
+            "type": "boolean",
+            "description": "Preserve face and facial features"
+          },
+          "preserve_body": {
+            "type": "boolean",
+            "description": "Preserve body proportions"
+          },
+          "allow_face_changes": {
+            "type": "boolean",
+            "description": "Allow face changes"
+          },
+          "color": {
+            "type": "string",
+            "description": "Color for hair changes"
+          },
+          "color_mode": {
+            "type": "string",
+            "enum": ["full", "tips", "highlights", "roots"],
+            "description": "Color application mode"
+          },
+          "clothing_type": {
+            "type": "string",
+            "enum": ["top", "bottom", "full"],
+            "description": "Type of clothing to change"
+          },
+          "style_tag": {
+            "type": "string",
+            "description": "Style tag for hairstyle or clothing"
+          }
+        }
+      },
+      "GenerationRequest": {
+        "type": "object",
+        "required": ["profile", "image_url", "prompt", "mode", "options"],
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the source image"
+          },
+          "mask_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the mask image (optional)"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Prompt for image generation"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["hair", "clothes"],
+            "description": "Generation mode"
+          },
+          "options": {
+            "$ref": "#/components/schemas/GenerationOptions"
+          }
+        }
+      },
+      "GenerationResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Generation result ID"
+          },
+          "original_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Original image URL"
+          },
+          "generated_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Generated image URL"
+          },
+          "prompt": {
+            "type": "string",
+            "description": "Prompt used for generation"
+          },
+          "timestamp": {
+            "type": "integer",
+            "description": "Generation timestamp"
+          },
+          "profile_id": {
+            "type": "string",
+            "description": "Associated profile ID"
+          }
+        }
+      },
+      "UploadRequest": {
+        "type": "object",
+        "required": ["imageData"],
+        "properties": {
+          "imageData": {
+            "type": "string",
+            "description": "Base64 encoded image data"
+          },
+          "filename": {
+            "type": "string",
+            "description": "Filename"
+          }
+        }
+      },
+      "UploadResult": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Uploaded image URL (data URI for development)"
+          }
+        }
+      },
+      "SegmentationRequest": {
+        "type": "object",
+        "required": ["image_url", "region"],
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL of the image to segment"
+          },
+          "region": {
+            "type": "string",
+            "enum": ["hair", "top", "bottom", "full"],
+            "description": "Region to segment"
+          }
+        }
+      },
+      "SegmentationResult": {
+        "type": "object",
+        "properties": {
+          "mask_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "description": "Generated mask URL (null if not implemented)"
+          },
+          "message": {
+            "type": "string",
+            "description": "Status message"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "details": {
+            "type": "string",
+            "description": "Additional error details"
+          }
+        }
+      }
+    }
+  }
+}

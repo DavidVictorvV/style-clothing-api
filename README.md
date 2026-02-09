@@ -35,6 +35,22 @@ netlify dev
 
 The functions will be available at `http://localhost:8888/.netlify/functions/`
 
+## 📚 Interactive API Documentation (Swagger UI)
+
+Access the interactive Swagger documentation to test endpoints directly in your browser:
+
+**Local**: `http://localhost:8888/` or `http://localhost:8888/docs`
+
+**Production**: `https://your-app.netlify.app/` or `https://your-app.netlify.app/docs`
+
+Features:
+- ✅ Interactive endpoint testing
+- ✅ Request/response examples
+- ✅ Schema documentation
+- ✅ Try it out functionality
+
+See [SWAGGER.md](SWAGGER.md) for detailed documentation.
+
 ## CORS Configuration
 
 All API endpoints include comprehensive CORS support:
